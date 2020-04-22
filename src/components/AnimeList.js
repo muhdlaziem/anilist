@@ -55,7 +55,7 @@ const GET_ANIME = gql`
 
 const AnimeList = ({navigation}) => {
   const {loading, error, data} = useQuery(GET_ANIME);
-  const [anime, setAnime] = useState(null);
+  const [anime, setAnime] = useState();
   const [search, setSearch] = useState('');
   const [load, setLoad] = useState(false);
   const styles = useStyleSheet(themedStyles);
@@ -163,16 +163,22 @@ const AnimeList = ({navigation}) => {
               flexWrap: 'wrap',
               justifyContent: 'center',
             }}>
-            {anime.length !== 0 ? (
-              <List
-                data={anime}
-                style={styles.container}
-                contentContainerStyle={styles.productList}
-                numColumns={2}
-                renderItem={renderProductItem}
-              />
+            {anime ? (
+              anime.length !== 0 ? (
+                <List
+                  data={anime}
+                  style={styles.container}
+                  contentContainerStyle={styles.productList}
+                  numColumns={2}
+                  renderItem={renderProductItem}
+                />
+              ) : (
+                <Text>No Such That !</Text>
+              )
             ) : (
-              <Text>No Such That !</Text>
+              <View style={styles.loadContainer}>
+                <Spinner />
+              </View>
             )}
           </View>
         </View>

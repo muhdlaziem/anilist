@@ -1,8 +1,0 @@
-Alert.alert(
-            'Information',
-            `Popularity: ${item.popularity}\nAverage Score: ${item.averageScore}\nOther Names:\n\t\t\tRomaji: ${item.title.romaji}\n\t\t\tEnglish: ${item.title.english}\n\t\t\tNative: ${item.title.native}`,
-
-            [{text: 'OK', onPress: () => console.log('OK Pressed')}],
-            {cancelable: false},
-          );
-        }
