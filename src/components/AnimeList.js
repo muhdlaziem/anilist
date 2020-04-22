@@ -6,12 +6,10 @@ import {
   ImageBackground,
   Dimensions,
   View,
-  Alert,
   ScrollView,
   SafeAreaView,
 } from 'react-native';
 import {
-  Layout,
   Text,
   List,
   Card,
@@ -21,6 +19,7 @@ import {
   Spinner,
 } from '@ui-kitten/components';
 
+import Loading from './ActivityIndicator';
 const GET_ANIME = gql`
   {
     Page {
@@ -58,14 +57,34 @@ const AnimeList = ({navigation}) => {
   const {loading, error, data} = useQuery(GET_ANIME);
   const [anime, setAnime] = useState(null);
   const [search, setSearch] = useState('');
+  const [load, setLoad] = useState(false);
   const styles = useStyleSheet(themedStyles);
 
   useEffect(() => {
-    setAnime(data);
+    if (data) {
+      setAnime(data.Page.media);
+    }
     // console.log(data.Page.media.length);
   }, [data]);
 
-  if (loading || !anime) {
+  useEffect(() => {
+    setLoad(true);
+    let arr = [];
+    if (data) {
+      data.Page.media.map((item) => {
+        if (
+          item.title.userPreferred.toLowerCase().includes(search.toLowerCase())
+        ) {
+          arr.push(item);
+        }
+      });
+      setAnime(arr);
+    }
+    setLoad(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search]);
+
+  if (loading) {
     return (
       <View style={styles.loadContainer}>
         <Spinner />
@@ -74,9 +93,9 @@ const AnimeList = ({navigation}) => {
   }
   if (error) {
     return (
-      <Layout>
-        <Text>Error: :(</Text>
-      </Layout>
+      <View style={styles.loadContainer}>
+        <Text>Couldnt Load Data :(</Text>
+      </View>
     );
   }
 
@@ -105,27 +124,27 @@ const AnimeList = ({navigation}) => {
   //     </Text>
   //   </View>
   // );
-  const renderProductItem = ({item}) =>
-    item.title.userPreferred.toLowerCase().includes(search.toLowerCase()) ? (
-      <Card
-        key={item.id}
-        style={styles.productItem}
-        header={() => renderItemHeader(item.coverImage.large)}
-        // footer={() => renderItemFooter(item)}
-        onPress={() => {
-          navigation.navigate('Characters & Informations', {
-            data: item,
-          });
-        }}>
-        <Text category="s1">{item.title.userPreferred}</Text>
-        <Text appearance="hint" category="c1">
-          {item.type}
-        </Text>
-      </Card>
-    ) : null;
+  const renderProductItem = ({item}) => (
+    <Card
+      key={item.id}
+      style={styles.productItem}
+      header={() => renderItemHeader(item.coverImage.large)}
+      // footer={() => renderItemFooter(item)}
+      onPress={() => {
+        navigation.navigate('Characters & Informations', {
+          data: item,
+        });
+      }}>
+      <Text category="s1">{item.title.userPreferred}</Text>
+      <Text appearance="hint" category="c1">
+        {item.type}
+      </Text>
+    </Card>
+  );
 
   return (
     <SafeAreaView>
+      <Loading load={load} />
       <View style={{flex: 1, margin: 10}}>
         <Input
           placeholder="Search By Name"
@@ -135,17 +154,26 @@ const AnimeList = ({navigation}) => {
         />
       </View>
       <View style={{height: 30, margin: 2}} />
-
       <ScrollView>
         <View style={{flex: 1, margin: 10}}>
-          <View style={{flexDirection: 'row', flex: 1, flexWrap: 'wrap'}}>
-            <List
-              data={anime.Page.media}
-              style={styles.container}
-              contentContainerStyle={styles.productList}
-              numColumns={2}
-              renderItem={renderProductItem}
-            />
+          <View
+            style={{
+              flexDirection: 'row',
+              flex: 1,
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+            }}>
+            {anime.length !== 0 ? (
+              <List
+                data={anime}
+                style={styles.container}
+                contentContainerStyle={styles.productList}
+                numColumns={2}
+                renderItem={renderProductItem}
+              />
+            ) : (
+              <Text>No Such That !</Text>
+            )}
           </View>
         </View>
         <View style={{height: 30}} />

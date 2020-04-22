@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import * as React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   ImageBackground,
   Dimensions,
@@ -7,7 +7,6 @@ import {
   Alert,
   ScrollView,
   SafeAreaView,
-  TouchableOpacity,
 } from 'react-native';
 import {
   Text,
@@ -19,23 +18,32 @@ import {
   Icon,
   Button,
 } from '@ui-kitten/components';
+import Loading from './ActivityIndicator';
 
 const AnimeList = ({route, navigation}) => {
   const styles = useStyleSheet(themedStyles);
   const {data} = route.params;
-  const [search, setSearch] = React.useState('');
+  const [search, setSearch] = useState('');
+  const [characters, setCharacters] = useState(data.characters.nodes);
+  const [load, setLoad] = useState(false);
 
   const renderItemHeader = (item) => (
     <ImageBackground style={styles.itemHeader} source={{uri: item}} />
   );
 
-  // const renderItemFooter = (item) => (
-  //   <View style={styles.itemFooter}>
-  //     <Text category="s1" style={{padding: 5, textAlign: 'center'}}>
-  //       Polularity: {item.popularity}
-  //     </Text>
-  //   </View>
-  // );
+  useEffect(() => {
+    setLoad(true);
+    let arr = [];
+    data.characters.nodes.map((item) => {
+      if (item.name.full.toLowerCase().includes(search.toLowerCase())) {
+        arr.push(item);
+      }
+    });
+    setCharacters(arr);
+    setLoad(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search]);
+
   const renderProductItem = ({item}) =>
     item.name.full.toLowerCase().includes(search.toLowerCase()) ? (
       <Card
@@ -51,6 +59,7 @@ const AnimeList = ({route, navigation}) => {
 
   return (
     <SafeAreaView>
+      <Loading load={load} />
       <View style={{flex: 1, margin: 10, flexDirection: 'row'}}>
         <Input
           placeholder="Search By Character's Name"
@@ -77,14 +86,24 @@ const AnimeList = ({route, navigation}) => {
       <View style={{height: 30, margin: 2}} />
       <ScrollView>
         <View style={{flex: 1, margin: 10}}>
-          <View style={{flexDirection: 'row', flex: 1, flexWrap: 'wrap'}}>
-            <List
-              data={data.characters.nodes}
-              style={styles.container}
-              contentContainerStyle={styles.productList}
-              numColumns={2}
-              renderItem={renderProductItem}
-            />
+          <View
+            style={{
+              flexDirection: 'row',
+              flex: 1,
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+            }}>
+            {characters.length !== 0 ? (
+              <List
+                data={characters}
+                style={styles.container}
+                contentContainerStyle={styles.productList}
+                numColumns={2}
+                renderItem={renderProductItem}
+              />
+            ) : (
+              <Text>No Such That !</Text>
+            )}
           </View>
         </View>
         <View style={{height: 30}} />
