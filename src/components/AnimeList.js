@@ -8,6 +8,7 @@ import {
   View,
   Alert,
   ScrollView,
+  SafeAreaView,
 } from 'react-native';
 import {
   Layout,
@@ -38,12 +39,22 @@ const GET_ANIME = gql`
         popularity
         averageScore
         id
+        characters(sort: FAVOURITES_DESC) {
+          nodes {
+            image {
+              large
+            }
+            name {
+              full
+            }
+          }
+        }
       }
     }
   }
 `;
 
-const AnimeList = (props) => {
+const AnimeList = ({navigation}) => {
   const {loading, error, data} = useQuery(GET_ANIME);
   const [anime, setAnime] = useState(null);
   const [search, setSearch] = useState('');
@@ -102,14 +113,9 @@ const AnimeList = (props) => {
         header={() => renderItemHeader(item.coverImage.large)}
         // footer={() => renderItemFooter(item)}
         onPress={() => {
-          // eslint-disable-next-line no-alert
-          Alert.alert(
-            'Information',
-            `Popularity: ${item.popularity}\nAverage Score: ${item.averageScore}\nOther Names:\n\t\t\tRomaji: ${item.title.romaji}\n\t\t\tEnglish: ${item.title.english}\n\t\t\tNative: ${item.title.native}`,
-
-            [{text: 'OK', onPress: () => console.log('OK Pressed')}],
-            {cancelable: false},
-          );
+          navigation.navigate('Characters & Informations', {
+            data: item,
+          });
         }}>
         <Text category="s1">{item.title.userPreferred}</Text>
         <Text appearance="hint" category="c1">
@@ -119,23 +125,32 @@ const AnimeList = (props) => {
     ) : null;
 
   return (
-    <View>
-      <Input
-        placeholder="Search By Name"
-        value={search}
-        onChangeText={(nextValue) => setSearch(nextValue)}
-        // style={{position: 'absolute', top: 0, left: 0}}
-      />
-      <View style={{flexDirection: 'row', flex: 1, flexWrap: 'wrap'}}>
-        <List
-          data={anime.Page.media}
-          style={styles.container}
-          contentContainerStyle={styles.productList}
-          numColumns={2}
-          renderItem={renderProductItem}
+    <SafeAreaView>
+      <View style={{flex: 1, margin: 10}}>
+        <Input
+          placeholder="Search By Name"
+          value={search}
+          onChangeText={(nextValue) => setSearch(nextValue)}
+          // style={{position: 'absolute', top: 0, left: 0}}
         />
       </View>
-    </View>
+      <View style={{height: 30, margin: 2}} />
+
+      <ScrollView>
+        <View style={{flex: 1, margin: 10}}>
+          <View style={{flexDirection: 'row', flex: 1, flexWrap: 'wrap'}}>
+            <List
+              data={anime.Page.media}
+              style={styles.container}
+              contentContainerStyle={styles.productList}
+              numColumns={2}
+              renderItem={renderProductItem}
+            />
+          </View>
+        </View>
+        <View style={{height: 30}} />
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 

@@ -5,9 +5,11 @@ import ApolloClient from 'apollo-boost';
 import {ApolloProvider} from '@apollo/react-hooks';
 // Create the client as outlined in the setup guide
 
-import AnimeList from './components/AnimeList';
+// import AnimeList from './components/AnimeList';
 import * as eva from '@eva-design/eva';
-import {ApplicationProvider} from '@ui-kitten/components';
+import {ApplicationProvider, IconRegistry} from '@ui-kitten/components';
+import Navigator from './routes/index';
+import {EvaIconsPack} from '@ui-kitten/eva-icons';
 const App = () => {
   console.disableYellowBox = true;
 
@@ -17,14 +19,9 @@ const App = () => {
 
   return (
     <ApolloProvider client={client}>
+      <IconRegistry icons={EvaIconsPack} />
       <ApplicationProvider {...eva} theme={eva.light}>
-        <SafeAreaView>
-          <ScrollView>
-            <View style={{flex: 1, margin: 10}}>
-              <AnimeList />
-            </View>
-          </ScrollView>
-        </SafeAreaView>
+        <Navigator />
       </ApplicationProvider>
     </ApolloProvider>
   );
