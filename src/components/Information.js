@@ -47,7 +47,7 @@ const AnimeList = ({route, navigation}) => {
   const renderProductItem = ({item}) =>
     item.name.full.toLowerCase().includes(search.toLowerCase()) ? (
       <Card
-        // key={item.id}
+        key={item.id}
         style={styles.productItem}
         header={() => renderItemHeader(item.image.large)}>
         <Text category="s1">{item.name.full}</Text>

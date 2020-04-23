@@ -46,6 +46,7 @@ const GET_ANIME = gql`
             name {
               full
             }
+            id
           }
         }
       }
