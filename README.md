@@ -20,17 +20,25 @@ Main Screen
 
 ![MainScreen](./screenshots/mainList.png)
 
+---
+
 Characters & Information Screens
 
 ![Characters&InformationScreens](./screenshots/characterList.png)
+
+---
 
 Information Alert
 
 ![InformationAlert](./screenshots/informationAlert.png)
 
+---
+
 Search Result Anime
 
 ![searchResultAnime](./screenshots/searchResultAnime.png)
+
+---
 
 Search Result Character
 
