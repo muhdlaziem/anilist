@@ -5,6 +5,7 @@ A test project using the integration of react-native &amp; graphql with apollocl
 Run these command:
 ```
 git clone https://github.com/muhdlaziem/anilist.git
+cd anilist
 npm i
 react-native start
 ```
